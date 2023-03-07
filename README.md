@@ -46,7 +46,7 @@ Four standard base ISAs:
 Instructions 32 bit aligned on 32 bit boundaries.  
 IALIGN = 32 or 16 - instruction-address alignment constraint.  
 
-# Instruction format
+## Instruction format
 
 Parcel - 16 bit in little-endian byte order.
 In memory - little endian byte order:
@@ -109,7 +109,7 @@ rd - destination
 CSR - control and status registers
 ```
 
-# Integer Register-Immediate instructions
+## Integer Register-Immediate instructions
 
 | Instr | Parameters     | Pseudo-code                            | Description          
 | ----  | -------------- | -------------------------------------- | -----------------------------------------------
@@ -164,8 +164,9 @@ addi  rd, rd, delta[11:0]
 # rd = rd + delta[11:0]
 
 # Example
-la    sp, stack_top # stack_top = 8000804c
-# pc = 80000008
+# stack_top = 8000804c
+#        pc = 80000008
+la    sp, stack_top 
 # delta = 0x8000804c - 0x80000008 = 0x8044
 auipc   sp,0x8      # sp = 80000008 + 0x8 << 12 = 0x80008008
 addi    sp,sp,0x44  # sp = 0x80008008 + 0x44 = 0x8000804c
@@ -244,13 +245,15 @@ snez rd, rs2 # == sltu rd, x0, rs2
 
 ## Unconditional Jumps
 
-| Instr | Parameters     | Pseudo-code                            | Description          
-| ----  | -------------- | -------------------------------------- | -----------------------------------------------
-| jal   | rd, off20      | rd = pc + 4 ; pc = pc + off20 << 1     | Jump And Link. Adresses +/- 1 MiB. <br /> Standard calling convention to use x1 or x5
-| jalr  | rd, rs1, off12 | rd = pc + 4 ; pc = rs1 + off12; pc[0] = 0| Jump And Link Regitster
-|       |                |                                        | 
+| Instr | Parameters     | Pseudo-code                              | Description          
+| ----  | -------------- | ---------------------------------------- | ----------------------------------
+| jal   | rd, off20      | rd = pc + 4 ; pc = pc + off20 << 1       | Jump And Link. Addresses +/- 1 MiB.
+| jalr  | rd, off12(rs1) | rd = pc + 4 ; pc = rs1 + off12; pc[0] = 0| Jump And Link Regitster
+|       |                |                                          | 
 |  |  |  | 
 |  |  |  | 
+
+Standard calling convention to use link register rd as x1 or x5.  
 
 ```
 # Jump 32-bit relative to PC
@@ -269,7 +272,12 @@ jalr x1, t0, address[11:0]  # jump to pc + address[31:0]
 
 ```
 
-## Unconditional jumps pseudo instructions
+## Unconditional Jumps Pseudo Instructions
+
+| Pseudo instr    | Real instruction    | Pseudo-code                       | Description
+| --------------- | ------------------- | --------------------------------- | -----------------------
+| ret             | jalr x0, 0(x1)      | pc = x1                           | Return from subroutine
+
 
 ```
 j - plain unconditional jump pseudoinstruction
@@ -328,11 +336,14 @@ bgeu rs1, rs2, off12
 
 ```
 
-## Conditional pseudoinstructions
+## Conditional Pseudo Instructions
+
+| Pseudo instr    | Real instruction    | Pseudo-code                           | Description
+| --------------- | ------------------- | ------------------------------------- | --------------------- 
+| bnez rs1, off12 | bne rs1, x0, off12  | if rs1 != 0 then pc = pc + off12 << 1 | Branch Not Equal Zero
 
 ```
 beqz rs, off12  - branch if == 0
-bnez rs, off12  - branch if != 0
 blez rs, off12  - branch if <= 0
 bqez rs, off12  - branch if >= 0
 bltz rs, off12  - branch if < 0
@@ -341,9 +352,6 @@ bgtz rs, off12  - branch if > 0
 
 ```
 beqz rs, off12 == beq rs, x0, off12
-
-bnez rs1, off12 == bne rs1, x0, off12
- # if rs1 != 0 then pc = pc + off12 << 1
 
 blez rs, off12  ==
 bqez rs, off12  ==
@@ -355,12 +363,16 @@ bgtz rs, off12  ==
 
 ## Load and Store Instructions
 
+| Instr | Parameters     | Pseudo-code                            | Description          
+| ----  | -------------- | -------------------------------------- | -----------------------------------------------
+| lbu   | rd, off12(rs1) | rd = memory[rs1 + sign_extend(off12)]  | Load Byte Unsigned
+|  |  |  | 
+
 ```
 lw  - Load Word
 lh  - Load Halfword
 lhu - Load Word Unsigned
 lb  - Load Byte
-lbu - Load Byte Unsigned
 sw  - Store Word
 sh  - Store Halfword
 sb  - Store Byte
@@ -384,11 +396,11 @@ sw    rs2, off12(rs1)
 
 ```
 
-# 2.7 Memory Ordering Instructions
+## Memory Ordering Instructions
 
 fence 
 
-# 2.8 Environment Call and Breakpoints
+## Environment Call and Breakpoints
 
 ecall
 ebreak
