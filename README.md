@@ -301,9 +301,10 @@ jal off20 - pseudo instruction
 All branch instruction encode 12-bit sign extended off12 of 2 bytes.
 The Conditional branch is +/- 4 KiB.
 
-| Instr | Parameters     | Pseudo-code                            | Description          
-| ----  | -------------- | -------------------------------------- | -----------------------------------------------
-| beq | rs1, rs2, off12  | if rs1 == rs2 then pc = pc + off12 << 1 | branch equal
+| Instr | Parameters      | Pseudo-code                             | Description          
+| ----  | --------------- | --------------------------------------- | ---------------------
+| beq   | rs1, rs2, off12 | if rs1 == rs2 then pc = pc + off12 << 1 | Branch Equal
+| bne   | rs1, rs2, off12 | if rs1 != rs2 then pc = pc + off12 << 1 | Branch Not Equal
 |  |  |  | 
 
 
@@ -314,9 +315,6 @@ bge  - Branch Greater Equal
 bgeu - Branch Greater Equal Unsigned  
 
 ```
-# branch not equal
-bne rs1, rs2, off12
- # if rs1 != rs2 then pc = pc + off12 << 1
 
 # branch less than
 blt rs1, rs2, off12
@@ -363,9 +361,14 @@ bgtz rs, off12  ==
 
 ## Load and Store Instructions
 
-| Instr | Parameters     | Pseudo-code                            | Description          
-| ----  | -------------- | -------------------------------------- | -----------------------------------------------
-| lbu   | rd, off12(rs1) | rd = memory[rs1 + sign_extend(off12)]  | Load Byte Unsigned
+| Instr | Parameters     | Pseudo-code                                 | Description          
+| ----  | -------------- | ------------------------------------------- | ---------------------------
+| lbu   | rd, off12(rs1) | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Byte Unsigned
+|       |                | rd[XLEN:8] = 0                              | zero extends rd
+| lb    | rd, off12(rs1) | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Word, sign extends
+|       |                | rd[XLEN:8] = sign                           | sign extends rd
+| lw    | rd, off12(rs1) | rd[31:0] = memory[rs1 + sign_extend(off12)] | Load Word, sign extends
+|       |                | rd[XLEN:32] = sign                          | sign extends rd
 |  |  |  | 
 
 ```
