@@ -305,11 +305,11 @@ The Conditional branch is +/- 4 KiB.
 | ----  | --------------- | --------------------------------------- | ---------------------
 | beq   | rs1, rs2, off12 | if rs1 == rs2 then pc = pc + off12 << 1 | Branch Equal
 | bne   | rs1, rs2, off12 | if rs1 != rs2 then pc = pc + off12 << 1 | Branch Not Equal
+| blt   | rs1, rs2, off12 | if rs1 < rs2 then pc = pc + off12 << 1  | Branch Less than
 |  |  |  | 
 
 
 bne  - branch not equal  
-blt  - branch less than  
 bltu - Branch Less Than Unsigned  
 bge  - Branch Greater Equal  
 bgeu - Branch Greater Equal Unsigned  
@@ -361,14 +361,17 @@ bgtz rs, off12  ==
 
 ## Load and Store Instructions
 
-| Instr | Parameters     | Pseudo-code                                 | Description          
-| ----  | -------------- | ------------------------------------------- | ---------------------------
-| lbu   | rd, off12(rs1) | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Byte Unsigned
-|       |                | rd[XLEN:8] = 0                              | zero extends rd
-| lb    | rd, off12(rs1) | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Word, sign extends
-|       |                | rd[XLEN:8] = sign                           | sign extends rd
-| lw    | rd, off12(rs1) | rd[31:0] = memory[rs1 + sign_extend(off12)] | Load Word, sign extends
-|       |                | rd[XLEN:32] = sign                          | sign extends rd
+All load and store instructions sign extend 12-bit immidiate before adding to rs1.
+
+| Instr | Parameters      | Pseudo-code                                 | Description          
+| ----  | --------------- | ------------------------------------------- | --------------------------
+| lbu   | rd, off12(rs1)  | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Byte Unsigned
+|       |                 | rd[XLEN:8] = 0                              | zero extends rd
+| lb    | rd, off12(rs1)  | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Word, sign extends
+|       |                 | rd[XLEN:8] = sign                           | sign extends rd
+| lw    | rd, off12(rs1)  | rd[31:0] = memory[rs1 + sign_extend(off12)] | Load Word, sign extends
+|       |                 | rd[XLEN:32] = sign                          | sign extends rd
+| sw    | rs2, off12(rs1) | memory[rs1 + sign_extend(off12)] = rs2[31:0]| Store Word to memory
 |  |  |  | 
 
 ```
