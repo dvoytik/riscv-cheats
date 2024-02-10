@@ -361,38 +361,29 @@ bgtz rs, off12  ==
 
 ## Load and Store Instructions
 
-All load and store instructions sign extend 12-bit immidiate before adding to rs1.
-
+These instructions load (read) or store (write) data from/to memory to/from registers. 
+All load and store instructions calculate address by sign extending 12-bit immediate before adding to rs1 register value. 
+Some instructions sign-extend  read value, i.e. copy most left bit to the rest of bits of the `rd` register.
+ 
 | Instr | Parameters      | Pseudo-code                                 | Description          
 | ----  | --------------- | ------------------------------------------- | --------------------------
 | lbu   | rd, off12(rs1)  | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Byte Unsigned
 |       |                 | rd[XLEN:8] = 0                              | zero extends rd
-| lb    | rd, off12(rs1)  | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Byte, sign extends
+| lb    | rd, off12(rs1)  | rd[7:0] = memory[rs1 + sign_extend(off12)]  | Load Byte from memory
 |       |                 | rd[XLEN:8] = sign                           | sign extends rd
-| lw    | rd, off12(rs1)  | rd[31:0] = memory[rs1 + sign_extend(off12)] | Load Word, sign extends
+| lhu   | rd, off12(rs1)  | rd[15:0] = memory[rs1 + sign_extend(off12)] | Load Halfword from memory
+|       |                 | rd[XLEN:16] = 0                             | 
+| lh    | rd, off12(rs1)  | rd[15:0] = memory[rs1 + sign_extend(off12)] | Load Halfword from memory
+|       |                 | rd[XLEN:16] = sign                          | sign extends rd
+| lw    | rd, off12(rs1)  | rd[31:0] = memory[rs1 + sign_extend(off12)] | Load Word from memory
 |       |                 | rd[XLEN:32] = sign                          | sign extends rd
-| sb    | rs2, off12(rs1) | memory[rs1 + sign_extend(off12)] = rs2[7:0] | Store Byte, sign extends
-|       |                 |                                             | sign extends rd
-| sw    | rs2, off12(rs1) | memory[rs1 + sign_extend(off12)] = rs2[31:0]| Store Word to memory
+| sb    | rs2, off12(rs1) | memory[rs1 + sign_extend(off12)] = rs2[7:0] | Store Byte to memory at address rs1 + sign_extend(off12)
+|       |                 |                                             |
+| sh    | rs2, off12(rs1) | memory[rs1 + sign_extend(off12)] = rs2[15:0]| Store Halfword to memory at address rs1 + sign_extend(off12)
+|       |                 |                                             |
+| sw    | rs2, off12(rs1) | memory[rs1 + sign_extend(off12)] = rs2[31:0]| Store Word to memory at address rs1 + sign_extend(off12)
 |  |  |  | 
 
-```
-lh  - Load Halfword
-lhu - Load Word Unsigned
-lb  - Load Byte
-sw  - Store Word
-sh  - Store Halfword
-```
-
-```
-
-lh    rd, off12(rs1)
- # rd = sign_extend(memory[rs1 + sign_extend(off12)])
-
-lhu   rd, off12(rs1)
- # rd = zero_extend(memory[rs1 + sign_extend(off12)])
-
-```
 
 ## Memory Ordering Instructions
 
